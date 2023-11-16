@@ -1,0 +1,68 @@
+<% layout("/layouts/boilerplate") %>
+
+    <body>
+
+        <div class="row">
+            <div class="col col-sm-8 offset-md-2">
+                <h3>
+                    <%= listing.title%>
+                </h3>
+                <div class="card mb-3 border border-0">
+                    <img src="<%=listing.image%>" class="card-img-top img-fluid" alt="Listing img"
+                        style="height: 50vh;">
+                    <div class="card-body">
+                        <h5 class="card-title">
+                            listing details
+                        </h5>
+                        <p class="card-text">
+                            <%= listing.description %>
+                                <br>
+                                <b>&#8377; <%= listing.price.toLocaleString("en-IN") %> / night</b>
+                        </p>
+                        <p class="card-text">
+                            <%= listing.location %> , <%= listing.country %>
+                        </p>
+                    </div>
+                    <div class="row mt-2">
+                        <div class="col-1">
+                            <a class="btn btn-secondary border border-0" href="/listings/edit/<%=listing.id%>">Edit</a>
+                        </div>
+                        <div class="col-2">
+                            <form action="/listings/<%=listing.id%>?_method=DELETE" method="POST"><button type="submit"
+                                    class="btn btn-primary border border-0" style="background-color: #fd4955;
+                                    color: white;">delete
+                                    listing</button></form>
+                        </div>
+
+                    </div>
+                    <hr>
+                    <div class="col-8 align-self-start mb-3">
+                        <h4>Leave a Review</h4>
+                        <form action="/listings/review/<%= listing.id %>" , method="POST" novalidate
+                            class="needs-validation">
+                            <div class="mb-3">
+                                <label for="rating" class="form-label mb-3">Rating</label>
+                                <input type="range" min="1" max="5" name="review[rating]" id="rating" required>
+                                <div class="invalid-feedback">Give a Rating</div>
+                                <div class="valid-feedback">
+                                    Looks good!
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="comment" class="form-label"></label>
+                                <textarea name="review[comment]" id="comment" cols="30" rows="5"
+                                    placeholder="Leave a feedback" class="form-control mb-3" required></textarea>
+                                <div class="invalid-feedback">Add a comment</div>
+                                <div class="valid-feedback">
+                                    Looks good!
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-outline-dark mt-2 mb-3">Submit</button>
+                        </form>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </body>
