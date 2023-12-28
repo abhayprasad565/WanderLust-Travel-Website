@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const review = require("./review.js");
 const Schema = mongoose.Schema;
 // listing schema
 const listingSchema = new mongoose.Schema({
@@ -37,6 +38,11 @@ const listingSchema = new mongoose.Schema({
         },
     ]
 });
+// mongoose middileware to delete data when this q is called
+listingSchema.post("findOneAndDelete", async (listing) => {
+    // delete all reviews in the listing.reviews array
+    if (listing) await review.deleteMany({ reviews: { $in: listing.reviews } })
+})
 // listing model obj 
 const Listing = new mongoose.model("Listing", listingSchema);
 

@@ -36,7 +36,7 @@
 
                     </div>
                     <hr>
-                    <div class="col-8 align-self-start mb-3">
+                    <div class="col-10 align-self-start mb-3">
                         <h4>Leave a Review</h4>
                         <form action="/listings/review/<%= listing.id %>" , method="POST" novalidate
                             class="needs-validation">
@@ -59,6 +59,29 @@
                             </div>
                             <button type="submit" class="btn btn-outline-dark mt-2 mb-3">Submit</button>
                         </form>
+                        <hr>
+                        <h4>All reviews</h4>
+                        <div class="row ">
+                            <% for(rev of listing.reviews) { %>
+                                <div class="card col-5 mb-3 ms-3">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Jhon Doe</h5>
+                                        <p class="card-text">
+                                            <%= rev.comment %>
+                                        </p>
+                                        <p class="card-text">
+                                            rated <%= rev.rating %> stars
+                                        </p>
+                                        <form action="/listings/review/<%=listing._id%>/<%=rev._id%>?_method=DELETE"
+                                            method="POST" class="mb-3">
+                                            <button class="btn btn-dark btn-sm">Delete</button>
+                                        </form>
+
+                                    </div>
+                                </div>
+                                <% } %>
+                        </div>
+
                     </div>
 
                 </div>

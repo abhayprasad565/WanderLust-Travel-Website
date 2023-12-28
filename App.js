@@ -11,36 +11,23 @@ const MONGOURL = `mongodb://127.0.0.1:27017/wanderlust`;
 const ejsMate = require("ejs-mate");
 const { listingSchema, reviewSchema } = require("./schema.js");
 const Review = require("./models/review.js");
-
+// middilewares
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "views"));
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride("_method"));
 app.engine("ejs", ejsMate);
 app.use(express.static(path.join(__dirname, "/public")));
-
-
+const listingRoute = require("./routes/listingRoute.js");
+const reviewRoute = require("./routes/reviewRoute.js");
 main()
     .then(() => console.log("connected to db wanderlust"))
     .catch(err => console.log(err));
 async function main() {
     await mongoose.connect(MONGOURL);
 }
-// validate listing schema
-const validateListing = (req, res, next) => {
 
-    let { error } = listingSchema.validate(req.body);
-    if (error) {
-        throw new ExpressError(400, error)
-    } else next();
-}
-// validate review schema
-const validateReview = (req, res, next) => {
-    let { error } = reviewSchema.validate(req.body);
-    if (error) {
-        throw new ExpressError(400, error)
-    } else next();
-}
+
 // home route to show all hotels
 app.get("/listings", async (req, res) => {
     const allListings = await Listing.find({});
@@ -59,48 +46,11 @@ app.get("/listings/edit/:id", wrapAsync(async (req, res) => {
     res.render("listings/edit.ejs", { listing });
 }));
 
-// show route
-app.get("/listings/:id", wrapAsync(async (req, res) => {
-    let { id } = req.params;
-    const listing = await Listing.findById(id);
-    res.render("listings/show.ejs", { listing });
-}));
-// create listing route
-app.post("/listings", validateListing, wrapAsync(async (req, res) => {
 
-    let data = new Listing(req.body.listing);
-    await data.save();
-    res.redirect("/listings");
-}));
-// update route
-app.put("/listings/:id", validateListing, wrapAsync(async (req, res) => {
-    let data = req.body.listing;
-
-    let { id } = req.params;
-    let obj = await Listing.findByIdAndUpdate(id, { ...data });
-    res.redirect(`/listings/${id}`);
-}));
-// delete route
-app.delete("/listings/:id", wrapAsync(async (req, res) => {
-    let { id } = req.params;
-    let data = await Listing.findByIdAndDelete(id);
-    console.log(data);
-    res.redirect("/listings");
-}));
-// reviews  
-// create review route
-app.post("/listings/review/:id", validateReview, wrapAsync(async (req, res) => {
-    let id = req.params.id;
-    let listing = await Listing.findById(id);
-    let newReview = new Review(req.body.review);
-    listing.reviews.push(newReview);
-    console.log(id);
-    await newReview.save();
-    await listing.save();
-    let redirect_id = `/listings/${id}`;
-    res.redirect(redirect_id);
-}));
-
+// listing backend route
+app.use("/listings", listingRoute)
+// listing review route
+app.use("/listings/review", reviewRoute);
 
 
 // 404 error res
